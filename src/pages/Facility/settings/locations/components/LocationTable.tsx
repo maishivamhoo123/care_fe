@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+//first cahnge
 import { motion } from "framer-motion";
 import {
   ArrowDown,
@@ -8,6 +9,7 @@ import {
   PenLine,
   Trash,
 } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -94,6 +96,8 @@ export function LocationTable({
       toast.success(t("location_removed_successfully"));
     },
   });
+  const [openDialogFor, setOpenDialogFor] = useState<string | null>(null);
+  const [showTooltipFor, setShowTooltipFor] = useState<string | null>(null);
 
   return (
     <div className="rounded-lg border">
@@ -264,8 +268,13 @@ export function LocationTable({
                         {/* Delete button or spacer */}
                         {!location.has_children &&
                         !location.current_encounter ? (
-                          <AlertDialog>
-                            <Tooltip>
+                          <AlertDialog
+                            open={openDialogFor === location.id}
+                            onOpenChange={(open) => {
+                              setOpenDialogFor(open ? location.id : null);
+                            }}
+                          >
+                            <Tooltip open={showTooltipFor === location.id}>
                               <TooltipTrigger asChild>
                                 <AlertDialogTrigger asChild>
                                   <Button
@@ -273,6 +282,14 @@ export function LocationTable({
                                     size="icon"
                                     className="text-destructive hover:text-destructive"
                                     data-cy="delete-location-button"
+                                    onMouseEnter={() =>
+                                      setShowTooltipFor(location.id)
+                                    }
+                                    onMouseLeave={() => setShowTooltipFor(null)}
+                                    onClick={() => {
+                                      setOpenDialogFor(location.id);
+                                      setShowTooltipFor(null);
+                                    }}
                                   >
                                     <Trash className="size-4" />
                                   </Button>
@@ -280,6 +297,7 @@ export function LocationTable({
                               </TooltipTrigger>
                               <TooltipContent>{t("delete")}</TooltipContent>
                             </Tooltip>
+
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>
@@ -294,7 +312,11 @@ export function LocationTable({
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>
+                                <AlertDialogCancel
+                                  onClick={() => {
+                                    setShowTooltipFor(null); // ✅ hide tooltip here as well
+                                  }}
+                                >
                                   {t("cancel")}
                                 </AlertDialogCancel>
                                 <AlertDialogAction

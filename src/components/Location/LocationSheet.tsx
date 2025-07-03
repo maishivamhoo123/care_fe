@@ -901,7 +901,7 @@ export function LocationSheet({
         open={showDischargeDialog}
         onOpenChange={setShowDischargeDialog}
       >
-        <AlertDialogContent>
+        <AlertDialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("confirm_selection")}</AlertDialogTitle>
             <AlertDialogDescription>
@@ -924,7 +924,14 @@ export function LocationSheet({
         </AlertDialogContent>
       </AlertDialog>
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent
+          onCloseAutoFocus={(e) => {
+            e.preventDefault();
+            if (document.activeElement instanceof HTMLElement) {
+              document.activeElement.blur();
+            }
+          }}
+        >
           <AlertDialogHeader>
             <AlertDialogTitle>{t("confirm")}</AlertDialogTitle>
             <AlertDialogDescription>
